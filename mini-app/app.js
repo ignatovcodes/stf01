@@ -66,10 +66,11 @@ function initSketchBackground() {
   const container = document.getElementById("sketch-bg");
   if (!container) return;
 
-  const count = 55;
-  const cols = 7;
-  const rows = Math.ceil(count / cols);
+  const cols = 6;
+  const rows = 10;
+  const count = cols * rows;
   const items = [];
+  const size = 38;
 
   for (let i = 0; i < count; i++) {
     const el = document.createElement("div");
@@ -78,7 +79,6 @@ function initSketchBackground() {
     const svgIndex = Math.floor(Math.random() * SKETCH_SVGS.length);
     el.innerHTML = SKETCH_SVGS[svgIndex];
 
-    const size = 36 + Math.random() * 44;
     el.style.width = size + "px";
     el.style.height = size + "px";
 
@@ -86,30 +86,29 @@ function initSketchBackground() {
     const row = Math.floor(i / cols);
     const cellW = 100 / cols;
     const cellH = 100 / rows;
-    const baseX = col * cellW + Math.random() * cellW * 0.7;
-    const baseY = row * cellH + Math.random() * cellH * 0.6;
+    const baseX = col * cellW + cellW * 0.3;
+    const baseY = row * cellH + cellH * 0.25;
     el.style.left = baseX + "%";
     el.style.top = baseY + "%";
 
-    const opacity = 0.06 + Math.random() * 0.05;
+    const opacity = 0.06 + Math.random() * 0.04;
     el.style.opacity = opacity;
 
-    const scale = 0.85 + Math.random() * 0.3;
+    const scale = 0.9 + Math.random() * 0.15;
 
     items.push({
       el,
       scale,
-      opacity,
       phase: Math.random() * Math.PI * 2,
       phaseY: Math.random() * Math.PI * 2,
       phaseRot: Math.random() * Math.PI * 2,
-      speedX: 0.0002 + Math.random() * 0.0003,
-      speedY: 0.00015 + Math.random() * 0.00035,
-      speedRot: 0.0001 + Math.random() * 0.0002,
-      ampX: 12 + Math.random() * 20,
-      ampY: 10 + Math.random() * 22,
-      ampRot: 8 + Math.random() * 18,
-      rot0: -30 + Math.random() * 60,
+      speedX: 0.00015 + Math.random() * 0.0002,
+      speedY: 0.00012 + Math.random() * 0.00018,
+      speedRot: 0.0001 + Math.random() * 0.00015,
+      ampX: 5 + Math.random() * 7,
+      ampY: 4 + Math.random() * 6,
+      ampRot: 6 + Math.random() * 10,
+      rot0: -20 + Math.random() * 40,
     });
 
     container.appendChild(el);

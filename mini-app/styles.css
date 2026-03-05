@@ -610,26 +610,21 @@ body {
 
 .menu-card-footer {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 4px;
-  min-height: 36px;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .menu-card-price {
   font-family: 'Montserrat', sans-serif;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--text);
-  flex-shrink: 1;
-  min-width: 0;
-  white-space: nowrap;
 }
 
 .btn-add {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
+  width: 100%;
+  height: 34px;
+  border-radius: 17px;
   border: 1.5px solid var(--accent);
   background: transparent;
   color: var(--accent);
@@ -639,49 +634,51 @@ body {
   justify-content: center;
   cursor: pointer;
   transition: all 0.25s ease;
-  flex-shrink: 0;
 }
 
 .btn-add:active {
   background: var(--accent);
   color: white;
-  transform: scale(0.9);
+  transform: scale(0.96);
 }
 
 .qty-control {
   display: flex;
   align-items: center;
-  gap: 4px;
-  flex-shrink: 0;
+  justify-content: space-between;
+  width: 100%;
+  height: 34px;
+  border-radius: 17px;
+  border: 1.5px solid var(--border-strong);
+  overflow: hidden;
 }
 
 .qty-btn {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 1.5px solid var(--accent);
+  width: 34px;
+  height: 100%;
+  border-radius: 0;
+  border: none;
   background: transparent;
   color: var(--accent);
-  font-size: 15px;
+  font-size: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background 0.2s;
   font-family: inherit;
   flex-shrink: 0;
 }
 
 .qty-btn:active {
-  background: var(--accent);
-  color: white;
+  background: var(--accent-bg);
 }
 
 .qty-value {
   font-family: 'Montserrat', sans-serif;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
-  min-width: 14px;
+  min-width: 20px;
   text-align: center;
   color: var(--text);
 }
