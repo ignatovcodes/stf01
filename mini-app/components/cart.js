@@ -17,11 +17,8 @@ export class Cart {
     const current = this.items.get(itemId) || 0;
     const next = Math.max(0, current + delta);
 
-    if (next === 0) {
-      this.items.delete(itemId);
-    } else {
-      this.items.set(itemId, next);
-    }
+    if (next === 0) this.items.delete(itemId);
+    else this.items.set(itemId, next);
 
     console.log(`[Cart] ${itemId}: ${current} → ${next}`);
     this.onChange();
@@ -50,9 +47,7 @@ export class Cart {
     const list = [];
     this.items.forEach((qty, id) => {
       const item = this.menuItems.get(id);
-      if (item) {
-        list.push({ ...item, qty });
-      }
+      if (item) list.push({ ...item, qty });
     });
     return list;
   }
@@ -97,7 +92,7 @@ export function renderCart(cart, onQuantityChange) {
       <div class="cart-item-emoji">${item.emoji}</div>
       <div class="cart-item-info">
         <div class="cart-item-name">${item.name}</div>
-        <div class="cart-item-price">${item.price * item.qty} ₽</div>
+        <div class="cart-item-price">${(item.price * item.qty).toLocaleString("ru-RU")} ₽</div>
       </div>
       <div class="cart-item-controls">
         <button class="cart-item-qty-btn" data-action="minus" data-id="${item.id}">−</button>
@@ -108,14 +103,12 @@ export function renderCart(cart, onQuantityChange) {
 
     row.querySelectorAll(".cart-item-qty-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
-        const action = btn.dataset.action;
-        const id = btn.dataset.id;
-        onQuantityChange(id, action === "plus" ? 1 : -1);
+        onQuantityChange(btn.dataset.id, btn.dataset.action === "plus" ? 1 : -1);
       });
     });
 
     cartItems.appendChild(row);
   });
 
-  cartTotalPrice.textContent = `${cart.getTotal()} ₽`;
+  cartTotalPrice.textContent = cart.getTotal().toLocaleString("ru-RU") + " ₽";
 }

@@ -14,7 +14,7 @@ let activeCategory = null;
 const cart = new Cart(() => updateCartBadge());
 
 /* =============================================
-   DOM references
+   DOM
    ============================================= */
 
 const $splash = document.getElementById("splash-screen");
@@ -24,6 +24,38 @@ const $menu = document.getElementById("menu-screen");
 const $cart = document.getElementById("cart-screen");
 const $cartBtn = document.getElementById("cart-btn");
 const $cartCount = document.getElementById("cart-count");
+
+/* =============================================
+   Sketch Background — floating pencil-drawn food
+   ============================================= */
+
+function initSketchBackground() {
+  const container = document.getElementById("sketch-bg");
+  if (!container) return;
+
+  const foodItems = [
+    "🍕", "🍔", "🥗", "🍝", "🍰", "🥩", "🍗", "🧀",
+    "🍷", "☕", "🫓", "🍜", "🥘", "🍟", "🫑", "🍋",
+    "🍅", "🍤", "🥧", "🍮", "🐟", "🔥", "🍖", "🥒",
+    "🍊", "🫐", "🍵", "🥔", "🍚", "🥦", "🍫", "🍧",
+  ];
+
+  const count = 20;
+
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement("div");
+    el.className = "sketch-item";
+    el.textContent = foodItems[Math.floor(Math.random() * foodItems.length)];
+
+    const size = 24 + Math.random() * 20;
+    el.style.fontSize = size + "px";
+    el.style.left = Math.random() * 100 + "%";
+    el.style.animationDuration = (18 + Math.random() * 22) + "s";
+    el.style.animationDelay = (Math.random() * 20) + "s";
+
+    container.appendChild(el);
+  }
+}
 
 /* =============================================
    MAX WebApp SDK
@@ -47,9 +79,7 @@ function initWebApp() {
     WebApp.enableClosingConfirmation();
 
     if (WebApp.BackButton) {
-      WebApp.BackButton.onClick(() => {
-        handleBack();
-      });
+      WebApp.BackButton.onClick(() => handleBack());
     }
 
     if (WebApp.HapticFeedback) {
@@ -66,7 +96,6 @@ function initWebApp() {
 
 function showScreen(name) {
   [$home, $menu, $cart].forEach((el) => el.classList.add("hidden"));
-
   currentScreen = name;
   window.scrollTo(0, 0);
 
@@ -92,25 +121,18 @@ function showScreen(name) {
 
 function handleBack() {
   haptic("light");
-  if (currentScreen === "cart") {
-    showScreen("menu");
-  } else if (currentScreen === "menu") {
-    showScreen("home");
-  }
+  if (currentScreen === "cart") showScreen("menu");
+  else if (currentScreen === "menu") showScreen("home");
 }
 
 function showBackButton() {
   const WebApp = window.WebApp;
-  if (WebApp && WebApp.BackButton) {
-    WebApp.BackButton.show();
-  }
+  if (WebApp?.BackButton) WebApp.BackButton.show();
 }
 
 function hideBackButton() {
   const WebApp = window.WebApp;
-  if (WebApp && WebApp.BackButton) {
-    WebApp.BackButton.hide();
-  }
+  if (WebApp?.BackButton) WebApp.BackButton.hide();
 }
 
 /* =============================================
@@ -128,14 +150,14 @@ function updateCartBadge() {
 }
 
 /* =============================================
-   Event handlers
+   Handlers
    ============================================= */
 
 function handleAddToCart(itemId, delta) {
   cart.add(itemId, delta);
   haptic("light");
   if (delta > 0 && cart.getQty(itemId) === 1) {
-    showToast("Добавлено в корзину");
+    showToast("Добавлено в заказ");
   }
 }
 
@@ -152,13 +174,92 @@ function handleCategorySelect(catId) {
 }
 
 /* =============================================
+   Waiter call — bottom sheet confirmation
+   ============================================= */
+
+function showWaiterSheet() {
+  const overlay = document.createElement("div");
+  overlay.className = "waiter-overlay";
+  overlay.innerHTML = `
+    <div class="waiter-sheet">
+      <div class="waiter-sheet-handle"></div>
+      <h3>Вызвать официанта?</h3>
+      <p>Мы пригласим официанта к вашему столику. Пожалуйста, подождите пару минут.</p>
+      <div class="waiter-btns">
+        <button class="waiter-btn-cancel">Отмена</button>
+        <button class="waiter-btn-confirm">Вызвать</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  requestAnimationFrame(() => overlay.classList.add("show"));
+
+  overlay.querySelector(".waiter-btn-cancel").addEventListener("click", () => {
+    overlay.classList.remove("show");
+    setTimeout(() => overlay.remove(), 350);
+  });
+
+  overlay.querySelector(".waiter-btn-confirm").addEventListener("click", () => {
+    haptic("success");
+    overlay.classList.remove("show");
+    setTimeout(() => {
+      overlay.remove();
+      showToast("Официант уже идёт к вам!");
+    }, 350);
+  });
+
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) {
+      overlay.classList.remove("show");
+      setTimeout(() => overlay.remove(), 350);
+    }
+  });
+}
+
+/* =============================================
+   Order success
+   ============================================= */
+
+function showOrderSuccess() {
+  const overlay = document.createElement("div");
+  overlay.className = "order-success-overlay";
+  overlay.innerHTML = `
+    <div class="order-success-content">
+      <div class="order-success-icon">✓</div>
+      <h3>Заказ оформлен</h3>
+      <p>Ваш заказ принят и будет готов в ближайшее время. Благодарим вас!</p>
+      <button class="btn-success-close">Отлично</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  requestAnimationFrame(() => overlay.classList.add("show"));
+
+  overlay.querySelector(".btn-success-close").addEventListener("click", () => {
+    haptic("success");
+    overlay.classList.remove("show");
+    setTimeout(() => {
+      overlay.remove();
+      cart.clear();
+      showScreen("home");
+      if (menuData) renderMenu(menuData.categories, cart, handleAddToCart);
+    }, 350);
+  });
+
+  haptic("success");
+}
+
+/* =============================================
    Utilities
    ============================================= */
 
 function haptic(style) {
   if (window._haptic) {
     try {
-      window._haptic.impactOccurred(style);
+      if (style === "success" || style === "error" || style === "warning") {
+        window._haptic.notificationOccurred(style);
+      } else {
+        window._haptic.impactOccurred(style);
+      }
     } catch (_) {}
   }
 }
@@ -174,57 +275,24 @@ function showToast(message) {
   toast.textContent = message;
   toast.classList.add("show");
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove("show"), 2000);
-}
-
-function showOrderSuccess() {
-  const overlay = document.createElement("div");
-  overlay.className = "order-success-overlay";
-  overlay.innerHTML = `
-    <div class="order-success-content">
-      <div class="order-success-icon">✅</div>
-      <h3>Заказ оформлен!</h3>
-      <p>Ваш заказ принят и будет готов в ближайшее время. Спасибо!</p>
-      <button class="btn-success-close">Отлично</button>
-    </div>
-  `;
-  document.body.appendChild(overlay);
-
-  requestAnimationFrame(() => overlay.classList.add("show"));
-
-  overlay.querySelector(".btn-success-close").addEventListener("click", () => {
-    haptic("success");
-    overlay.classList.remove("show");
-    setTimeout(() => {
-      overlay.remove();
-      cart.clear();
-      showScreen("home");
-      if (menuData) {
-        renderMenu(menuData.categories, cart, handleAddToCart);
-      }
-    }, 300);
-  });
-
-  haptic("success");
+  toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
 }
 
 /* =============================================
-   Setup intersection observer for category highlight
+   Intersection observer for category highlight
    ============================================= */
 
 function setupCategoryObserver(categories) {
-  const headerH = 56;
-  const catBarH = 52;
-  const offset = headerH + catBarH + 20;
+  const offset = 56 + 52 + 20;
 
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           const id = entry.target.id.replace("section-", "");
-          const pills = document.querySelectorAll(".cat-pill");
-          pills.forEach((p) => p.classList.toggle("active", p.dataset.id === id));
-
+          document.querySelectorAll(".cat-pill").forEach((p) =>
+            p.classList.toggle("active", p.dataset.id === id)
+          );
           const activePill = document.querySelector(`.cat-pill[data-id="${id}"]`);
           if (activePill) {
             activePill.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
@@ -232,10 +300,7 @@ function setupCategoryObserver(categories) {
         }
       });
     },
-    {
-      rootMargin: `-${offset}px 0px -60% 0px`,
-      threshold: 0,
-    }
+    { rootMargin: `-${offset}px 0px -60% 0px`, threshold: 0 }
   );
 
   categories.forEach((cat) => {
@@ -245,20 +310,20 @@ function setupCategoryObserver(categories) {
 }
 
 /* =============================================
-   Bootstrap
+   Init
    ============================================= */
 
 async function init() {
   console.log("[App] Инициализация приложения...");
 
   initWebApp();
+  initSketchBackground();
 
   try {
     menuData = await getMenuData();
     console.log("[App] Меню получено:", menuData.categories.length, "категорий");
 
     cart.setMenuItems(menuData.categories);
-
     activeCategory = menuData.categories[0]?.id;
 
     renderCategories(
@@ -270,7 +335,6 @@ async function init() {
     renderMenu(menuData.categories, cart, handleAddToCart);
     setupCategoryObserver(menuData.categories);
 
-    // Bind UI events
     document.getElementById("btn-menu").addEventListener("click", () => {
       haptic("medium");
       showScreen("menu");
@@ -278,12 +342,12 @@ async function init() {
 
     document.getElementById("btn-reserve").addEventListener("click", () => {
       haptic("medium");
-      showToast("Бронирование скоро будет доступно");
+      showToast("Бронирование: +7 (988) 353-57-35");
     });
 
     document.getElementById("btn-waiter").addEventListener("click", () => {
       haptic("medium");
-      showToast("Официант уже идёт к вам!");
+      showWaiterSheet();
     });
 
     $cartBtn.addEventListener("click", () => {
@@ -298,35 +362,34 @@ async function init() {
 
     document.getElementById("btn-order")?.addEventListener("click", () => {
       if (cart.isEmpty()) {
-        showToast("Корзина пуста");
+        showToast("Добавьте блюда в заказ");
         return;
       }
       showOrderSuccess();
     });
 
-    // Hide splash, show home
     $splash.classList.add("fade-out");
     setTimeout(() => {
       $splash.classList.add("hidden");
       showScreen("home");
       console.log("[App] Приложение готово к работе");
-    }, 500);
+    }, 600);
   } catch (err) {
     console.error("[App] Ошибка инициализации:", err);
-    $splash.querySelector(".splash-subtitle").textContent = "Ошибка загрузки. Попробуйте позже.";
+    $splash.querySelector(".splash-subtitle").textContent = "Ошибка загрузки";
   }
 }
 
 /* =============================================
-   Entry point — wait for DOM
+   Entry
    ============================================= */
 
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => {
-    console.log("[App] DOMContentLoaded fired");
+    console.log("[App] DOMContentLoaded");
     init();
   });
 } else {
-  console.log("[App] DOM already loaded");
+  console.log("[App] DOM ready");
   init();
 }

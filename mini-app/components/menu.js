@@ -18,8 +18,7 @@ export function renderMenu(categories, cart, onAddToCart) {
     grid.className = "menu-grid";
 
     category.items.forEach((item) => {
-      const card = createMenuCard(item, cart, onAddToCart);
-      grid.appendChild(card);
+      grid.appendChild(createMenuCard(item, cart, onAddToCart));
     });
 
     section.appendChild(grid);
@@ -55,26 +54,20 @@ function createMenuCard(item, cart, onAddToCart) {
 
   const price = document.createElement("div");
   price.className = "menu-card-price";
-  price.textContent = `${item.price} ₽`;
+  price.textContent = formatPrice(item.price);
   footer.appendChild(price);
 
-  const qty = cart.getQty(item.id);
   const controlsContainer = document.createElement("div");
   controlsContainer.id = `controls-${item.id}`;
 
-  if (qty > 0) {
-    controlsContainer.innerHTML = buildQtyControls(item.id, qty);
-  } else {
-    controlsContainer.innerHTML = buildAddButton(item.id);
-  }
+  const qty = cart.getQty(item.id);
+  controlsContainer.innerHTML = qty > 0
+    ? buildQtyControls(item.id, qty)
+    : buildAddButton();
 
   footer.appendChild(controlsContainer);
   body.appendChild(footer);
   card.appendChild(body);
-
-  card.addEventListener("click", (e) => {
-    if (e.target.closest(".btn-add") || e.target.closest(".qty-btn")) return;
-  });
 
   controlsContainer.addEventListener("click", (e) => {
     const addBtn = e.target.closest(".btn-add");
@@ -85,11 +78,7 @@ function createMenuCard(item, cart, onAddToCart) {
       updateCardControls(item.id, cart);
     } else if (qtyBtn) {
       const action = qtyBtn.dataset.action;
-      if (action === "plus") {
-        onAddToCart(item.id, 1);
-      } else if (action === "minus") {
-        onAddToCart(item.id, -1);
-      }
+      onAddToCart(item.id, action === "plus" ? 1 : -1);
       updateCardControls(item.id, cart);
     }
   });
@@ -102,11 +91,9 @@ function updateCardControls(itemId, cart) {
   if (!container) return;
 
   const qty = cart.getQty(itemId);
-  if (qty > 0) {
-    container.innerHTML = buildQtyControls(itemId, qty);
-  } else {
-    container.innerHTML = buildAddButton(itemId);
-  }
+  container.innerHTML = qty > 0
+    ? buildQtyControls(itemId, qty)
+    : buildAddButton();
 }
 
 function buildAddButton() {
@@ -121,6 +108,10 @@ function buildQtyControls(itemId, qty) {
       <button class="qty-btn" data-action="plus" data-id="${itemId}">+</button>
     </div>
   `;
+}
+
+function formatPrice(price) {
+  return price.toLocaleString("ru-RU") + " ₽";
 }
 
 export { updateCardControls };
