@@ -11,6 +11,9 @@ const filesToCopy = [
   "api.js",
 ];
 
+try { cpSync("logo.png", `${dist}/logo.png`); } catch (_) {}
+try { cpSync("images", `${dist}/images`, { recursive: true }); } catch (_) {}
+
 filesToCopy.forEach((file) => {
   cpSync(file, `${dist}/${file}`);
 });

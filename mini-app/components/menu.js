@@ -31,10 +31,19 @@ function createMenuCard(item, cart, onAddToCart) {
   card.className = "menu-card";
   card.dataset.itemId = item.id;
 
-  const imgPlaceholder = document.createElement("div");
-  imgPlaceholder.className = "menu-card-img-placeholder";
-  imgPlaceholder.textContent = item.emoji;
-  card.appendChild(imgPlaceholder);
+  if (item.image) {
+    const img = document.createElement("img");
+    img.className = "menu-card-img";
+    img.src = item.image;
+    img.alt = item.name;
+    img.loading = "lazy";
+    card.appendChild(img);
+  } else {
+    const imgPlaceholder = document.createElement("div");
+    imgPlaceholder.className = "menu-card-img-placeholder";
+    imgPlaceholder.textContent = item.emoji;
+    card.appendChild(imgPlaceholder);
+  }
 
   const body = document.createElement("div");
   body.className = "menu-card-body";

@@ -2,11 +2,15 @@ import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { handleWebhookUpdate } from "./lib/max-webhook.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 3000;
+const MAX_BOT_TOKEN = process.env.MAX_BOT_TOKEN || "";
+const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET || "";
+const MINI_APP_URL = process.env.MINI_APP_URL || "";
 
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -25,6 +29,36 @@ const MIME_TYPES = {
 };
 
 const server = http.createServer((req, res) => {
+  // Вебхук бота MAX: при нажатии «Старт» отправляем приветствие и кнопку в мини-приложение
+  if (req.method === "POST" && (req.url === "/webhook" || req.url === "/webhook/")) {
+    const secret = req.headers["x-max-bot-api-secret"];
+    if (WEBHOOK_SECRET && secret !== WEBHOOK_SECRET) {
+      res.writeHead(401, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ ok: false, error: "Invalid secret" }));
+      return;
+    }
+    let body = "";
+    req.setEncoding("utf8");
+    req.on("data", (chunk) => { body += chunk; });
+    req.on("end", async () => {
+      try {
+        const update = body ? JSON.parse(body) : {};
+        if (!MAX_BOT_TOKEN) {
+          console.warn("[Webhook] MAX_BOT_TOKEN не задан — приветствие не отправляется");
+        } else if (update.update_type === "bot_started" || update.update_type === "message_created") {
+          await handleWebhookUpdate(update, MAX_BOT_TOKEN, MINI_APP_URL);
+        }
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: true }));
+      } catch (e) {
+        console.error("[Webhook]", e);
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: true }));
+      }
+    });
+    return;
+  }
+
   let filePath = path.join(__dirname, req.url === "/" ? "index.html" : req.url);
 
   const ext = path.extname(filePath).toLowerCase();
@@ -57,6 +91,6 @@ const server = http.createServer((req, res) => {
   });
 });
 
-server.listen(PORT, () => {
-  console.log(`[Server] Запущен на http://localhost:${PORT}`);
+server.listen(PORT, "0.0.0.0", () => {
+  console.log(`[Server] Запущен на http://0.0.0.0:${PORT}`);
 });

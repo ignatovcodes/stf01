@@ -15,7 +15,6 @@
 </head>
 <body>
 
-  <!-- Animated sketch food background -->
   <div class="sketch-bg" id="sketch-bg"></div>
 
   <div id="app">
@@ -23,16 +22,7 @@
     <!-- Splash -->
     <div id="splash-screen" class="splash-screen">
       <div class="splash-content">
-        <div class="splash-logo-img">
-          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="50" cy="50" r="48" stroke="#9e8e6c" stroke-width="1" opacity="0.3"/>
-            <path d="M50 18 C50 18 30 30 30 50 C30 65 38 75 50 82 C62 75 70 65 70 50 C70 30 50 18 50 18Z" stroke="#9e8e6c" stroke-width="1.5" fill="none"/>
-            <path d="M50 28 C50 28 38 36 38 50 C38 60 43 68 50 73 C57 68 62 60 62 50 C62 36 50 28 50 28Z" stroke="#9e8e6c" stroke-width="1" fill="rgba(158,142,108,0.06)"/>
-            <line x1="50" y1="50" x2="50" y2="90" stroke="#9e8e6c" stroke-width="1.5"/>
-            <path d="M50 60 C50 60 42 55 40 48" stroke="#9e8e6c" stroke-width="1" fill="none"/>
-            <path d="M50 55 C50 55 58 50 60 43" stroke="#9e8e6c" stroke-width="1" fill="none"/>
-          </svg>
-        </div>
+        <img class="splash-logo-img" src="logo.png" alt="Стефания">
         <h1 class="splash-title">СТЕФАНИЯ</h1>
         <p class="splash-subtitle">вкус, объединяющий поколения</p>
         <div class="splash-loader">
@@ -46,12 +36,7 @@
     <!-- Header -->
     <header id="header" class="header hidden">
       <div class="header-inner">
-        <svg class="header-logo-tree" viewBox="0 0 100 100" fill="none">
-          <path d="M50 18 C50 18 30 30 30 50 C30 65 38 75 50 82 C62 75 70 65 70 50 C70 30 50 18 50 18Z" stroke="#9e8e6c" stroke-width="1.5" fill="none"/>
-          <line x1="50" y1="50" x2="50" y2="90" stroke="#9e8e6c" stroke-width="1.5"/>
-          <path d="M50 60 C50 60 42 55 40 48" stroke="#9e8e6c" stroke-width="1" fill="none"/>
-          <path d="M50 55 C50 55 58 50 60 43" stroke="#9e8e6c" stroke-width="1" fill="none"/>
-        </svg>
+        <img class="header-logo-img" src="logo.png" alt="Стефания">
         <h1 class="header-title">СТЕФАНИЯ</h1>
         <button id="cart-btn" class="cart-btn" aria-label="Корзина">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -67,14 +52,7 @@
     <!-- Home Screen -->
     <main id="home-screen" class="screen hidden">
       <section class="hero">
-        <svg class="hero-logo-tree" viewBox="0 0 100 100" fill="none">
-          <circle cx="50" cy="50" r="48" stroke="#9e8e6c" stroke-width="0.5" opacity="0.3"/>
-          <path d="M50 18 C50 18 30 30 30 50 C30 65 38 75 50 82 C62 75 70 65 70 50 C70 30 50 18 50 18Z" stroke="#9e8e6c" stroke-width="1.5" fill="none"/>
-          <path d="M50 28 C50 28 38 36 38 50 C38 60 43 68 50 73 C57 68 62 60 62 50 C62 36 50 28 50 28Z" stroke="#9e8e6c" stroke-width="1" fill="rgba(158,142,108,0.05)"/>
-          <line x1="50" y1="50" x2="50" y2="90" stroke="#9e8e6c" stroke-width="1.5"/>
-          <path d="M50 60 C50 60 42 55 40 48" stroke="#9e8e6c" stroke-width="1" fill="none"/>
-          <path d="M50 55 C50 55 58 50 60 43" stroke="#9e8e6c" stroke-width="1" fill="none"/>
-        </svg>
+        <img class="hero-logo-img" src="logo.png" alt="Стефания">
         <h1 class="hero-title">СТЕФАНИЯ</h1>
         <p class="hero-tagline">вкус, объединяющий поколения</p>
         <p class="hero-address">г. Краснодар, Кубанская наб., 186/1</p>
@@ -154,6 +132,94 @@
           <span id="cart-total-price">0 ₽</span>
         </div>
         <button class="btn-order" id="btn-order">Оформить заказ</button>
+      </div>
+    </section>
+
+    <!-- Waiter Screen -->
+    <section id="waiter-screen" class="screen hidden">
+      <div class="form-screen">
+        <div class="form-header">
+          <h2 class="form-title">Вызов официанта</h2>
+          <p class="form-desc">Укажите номер стола и причину</p>
+        </div>
+
+        <div class="form-body">
+          <label class="form-label">Номер стола</label>
+          <input type="number" id="w-table" class="form-input" placeholder="Например: 5" inputmode="numeric" min="1" max="99">
+
+          <label class="form-label">Что нужно?</label>
+          <div class="quick-actions" id="w-actions">
+            <button class="quick-btn" data-value="Принести счёт">📋 Счёт</button>
+            <button class="quick-btn" data-value="Принести меню">📖 Меню</button>
+            <button class="quick-btn" data-value="Принять заказ">🍽️ Заказ</button>
+            <button class="quick-btn" data-value="Убрать со стола">🧹 Убрать</button>
+            <button class="quick-btn" data-value="Принести воду">💧 Вода</button>
+            <button class="quick-btn" data-value="Вопрос по блюду">❓ Вопрос</button>
+          </div>
+
+          <label class="form-label">Комментарий</label>
+          <textarea id="w-comment" class="form-textarea" placeholder="Дополнительные пожелания..." rows="3"></textarea>
+        </div>
+
+        <div class="form-footer">
+          <button class="btn-form-submit" id="btn-waiter-send">Вызвать официанта</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reserve Screen -->
+    <section id="reserve-screen" class="screen hidden">
+      <div class="form-screen">
+        <div class="form-header">
+          <h2 class="form-title">Бронирование стола</h2>
+          <p class="form-desc">Заполните форму и мы подтвердим бронь</p>
+        </div>
+
+        <div class="form-body">
+          <label class="form-label">Имя и фамилия</label>
+          <input type="text" id="r-name" class="form-input" placeholder="Иван Иванов">
+
+          <label class="form-label">Телефон</label>
+          <input type="tel" id="r-phone" class="form-input" placeholder="+7 (___) ___-__-__" inputmode="tel">
+
+          <div class="form-row">
+            <div class="form-col">
+              <label class="form-label">Дата</label>
+              <input type="date" id="r-date" class="form-input">
+            </div>
+            <div class="form-col">
+              <label class="form-label">Время</label>
+              <input type="time" id="r-time" class="form-input" value="19:00">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-col">
+              <label class="form-label">Гостей</label>
+              <input type="number" id="r-guests" class="form-input" placeholder="2" min="1" max="50" inputmode="numeric">
+            </div>
+            <div class="form-col">
+              <label class="form-label">Зал</label>
+              <select id="r-zone" class="form-select">
+                <option value="">Любой</option>
+                <option value="Основной зал">Основной зал</option>
+                <option value="Веранда 1">Веранда 1</option>
+                <option value="Веранда 2">Веранда 2</option>
+                <option value="Веранда 3">Веранда 3</option>
+                <option value="VIP зал">VIP зал</option>
+                <option value="Банкетный зал">Банкетный зал</option>
+                <option value="Караоке-зал">Караоке-зал</option>
+              </select>
+            </div>
+          </div>
+
+          <label class="form-label">Комментарий</label>
+          <textarea id="r-comment" class="form-textarea" placeholder="Повод, пожелания, аллергии..." rows="3"></textarea>
+        </div>
+
+        <div class="form-footer">
+          <button class="btn-form-submit" id="btn-reserve-send">Забронировать</button>
+        </div>
       </div>
     </section>
 
