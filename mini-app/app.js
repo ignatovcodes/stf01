@@ -69,6 +69,7 @@ function initSketchBackground() {
   const count = 55;
   const cols = 7;
   const rows = Math.ceil(count / cols);
+  const items = [];
 
   for (let i = 0; i < count; i++) {
     const el = document.createElement("div");
@@ -77,7 +78,7 @@ function initSketchBackground() {
     const svgIndex = Math.floor(Math.random() * SKETCH_SVGS.length);
     el.innerHTML = SKETCH_SVGS[svgIndex];
 
-    const size = 40 + Math.random() * 45;
+    const size = 36 + Math.random() * 44;
     el.style.width = size + "px";
     el.style.height = size + "px";
 
@@ -85,35 +86,91 @@ function initSketchBackground() {
     const row = Math.floor(i / cols);
     const cellW = 100 / cols;
     const cellH = 100 / rows;
-    const x = col * cellW + Math.random() * cellW * 0.7;
-    const y = row * cellH + Math.random() * cellH * 0.6;
-    el.style.left = x + "%";
-    el.style.top = y + "%";
+    const baseX = col * cellW + Math.random() * cellW * 0.7;
+    const baseY = row * cellH + Math.random() * cellH * 0.6;
+    el.style.left = baseX + "%";
+    el.style.top = baseY + "%";
 
-    const rotFrom = -25 + Math.random() * 50;
-    const rotTo = rotFrom + (-8 + Math.random() * 16);
-    const dx = -10 + Math.random() * 20;
-    const dy = -12 + Math.random() * 24;
     const opacity = 0.06 + Math.random() * 0.05;
+    el.style.opacity = opacity;
+
     const scale = 0.85 + Math.random() * 0.3;
 
-    el.style.setProperty("--sk-rot-from", rotFrom + "deg");
-    el.style.setProperty("--sk-rot-to", rotTo + "deg");
-    el.style.setProperty("--sk-dx", dx + "px");
-    el.style.setProperty("--sk-dy", dy + "px");
-    el.style.setProperty("--sk-opacity", opacity);
-    el.style.setProperty("--sk-scale", scale);
-
-    el.style.animationDuration = (16 + Math.random() * 22) + "s";
-    el.style.animationDelay = (-Math.random() * 20) + "s";
+    items.push({
+      el,
+      scale,
+      opacity,
+      phase: Math.random() * Math.PI * 2,
+      phaseY: Math.random() * Math.PI * 2,
+      phaseRot: Math.random() * Math.PI * 2,
+      speedX: 0.0002 + Math.random() * 0.0003,
+      speedY: 0.00015 + Math.random() * 0.00035,
+      speedRot: 0.0001 + Math.random() * 0.0002,
+      ampX: 12 + Math.random() * 20,
+      ampY: 10 + Math.random() * 22,
+      ampRot: 8 + Math.random() * 18,
+      rot0: -30 + Math.random() * 60,
+    });
 
     container.appendChild(el);
   }
+
+  let last = performance.now();
+  function tick(now) {
+    const dt = now - last;
+    last = now;
+    for (const it of items) {
+      it.phase += it.speedX * dt;
+      it.phaseY += it.speedY * dt;
+      it.phaseRot += it.speedRot * dt;
+
+      const dx = Math.sin(it.phase) * it.ampX;
+      const dy = Math.cos(it.phaseY) * it.ampY;
+      const rot = it.rot0 + Math.sin(it.phaseRot) * it.ampRot;
+
+      it.el.style.transform = `translate(${dx}px,${dy}px) rotate(${rot}deg) scale(${it.scale})`;
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
 }
 
 /* =============================================
    MAX WebApp SDK
    ============================================= */
+
+function initSplashOrbit() {
+  const orbit = document.getElementById("splash-orbit");
+  if (!orbit) return;
+
+  const icons = [
+    SKETCH_SVGS[0],  // pizza
+    SKETCH_SVGS[1],  // steak
+    SKETCH_SVGS[2],  // khinkali
+    SKETCH_SVGS[3],  // wine
+    SKETCH_SVGS[4],  // coffee
+    SKETCH_SVGS[5],  // cloche
+    SKETCH_SVGS[8],  // pasta
+    SKETCH_SVGS[11], // shashlik
+  ];
+
+  const radius = 62;
+  const cx = 80;
+  const cy = 80;
+
+  icons.forEach((svg, i) => {
+    const el = document.createElement("div");
+    el.className = "splash-orbit-item";
+    el.innerHTML = svg;
+    const angle = (i / icons.length) * Math.PI * 2 - Math.PI / 2;
+    const x = cx + Math.cos(angle) * radius - 18;
+    const y = cy + Math.sin(angle) * radius - 18;
+    el.style.left = x + "px";
+    el.style.top = y + "px";
+    el.style.animationDelay = (i * 0.25) + "s";
+    orbit.appendChild(el);
+  });
+}
 
 function initWebApp() {
   console.log("[SDK] Инициализация MAX WebApp...");
@@ -599,6 +656,7 @@ function setupCategoryObserver(categories) {
 async function init() {
   console.log("[App] Инициализация...");
 
+  initSplashOrbit();
   initWebApp();
   initSketchBackground();
 

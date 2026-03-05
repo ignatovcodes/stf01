@@ -75,8 +75,7 @@ body {
 
 .sketch-item {
   position: absolute;
-  opacity: 0;
-  animation: sketchDrift ease-in-out infinite alternate;
+  will-change: transform;
 }
 
 .sketch-item svg {
@@ -87,20 +86,6 @@ body {
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
-}
-
-@keyframes sketchDrift {
-  0% {
-    opacity: var(--sk-opacity, 0.07);
-    transform: translate(0, 0) rotate(var(--sk-rot-from, 0deg)) scale(var(--sk-scale, 1));
-  }
-  50% {
-    opacity: calc(var(--sk-opacity, 0.07) * 1.15);
-  }
-  100% {
-    opacity: var(--sk-opacity, 0.07);
-    transform: translate(var(--sk-dx, 8px), var(--sk-dy, 12px)) rotate(var(--sk-rot-to, 8deg)) scale(var(--sk-scale, 1));
-  }
 }
 
 /* =============================================
@@ -129,26 +114,47 @@ body {
 }
 
 @keyframes splashIn {
-  from { opacity: 0; transform: translateY(20px) scale(0.95); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
 }
 
-.splash-logo-img {
-  width: 100px;
-  height: 100px;
-  margin: 0 auto 20px;
-  object-fit: contain;
-  display: block;
-  filter: brightness(0) saturate(100%) invert(59%) sepia(11%) saturate(940%) hue-rotate(7deg) brightness(92%) contrast(88%);
+.splash-orbit {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  margin: 0 auto 28px;
+  animation: splashSpin 8s linear infinite;
 }
 
-.splash-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 36px;
-  font-weight: 600;
-  letter-spacing: 10px;
-  color: var(--text);
-  margin-bottom: 8px;
+@keyframes splashSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.splash-orbit-item {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  animation: splashItemPulse 2s ease-in-out infinite alternate;
+}
+
+.splash-orbit-item svg {
+  width: 100%;
+  height: 100%;
+  stroke: var(--accent);
+  stroke-width: 1.4;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.splash-orbit-item:nth-child(odd) {
+  animation-delay: -0.6s;
+}
+
+@keyframes splashItemPulse {
+  from { opacity: 0.4; transform: scale(0.85) rotate(0deg); }
+  to { opacity: 1; transform: scale(1.1) rotate(-10deg); }
 }
 
 .splash-subtitle {
@@ -158,28 +164,12 @@ body {
   letter-spacing: 3px;
   color: var(--text-muted);
   text-transform: uppercase;
-  margin-bottom: 36px;
+  animation: splashTextPulse 1.6s ease-in-out infinite alternate;
 }
 
-.splash-loader {
-  display: flex;
-  gap: 6px;
-  justify-content: center;
-}
-
-.loader-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--accent);
-  animation: loaderPulse 1.4s ease-in-out infinite;
-}
-.loader-dot:nth-child(2) { animation-delay: 0.15s; }
-.loader-dot:nth-child(3) { animation-delay: 0.3s; }
-
-@keyframes loaderPulse {
-  0%, 80%, 100% { transform: scale(0.5); opacity: 0.3; }
-  40% { transform: scale(1); opacity: 1; }
+@keyframes splashTextPulse {
+  from { opacity: 0.4; }
+  to { opacity: 1; }
 }
 
 /* =============================================
@@ -622,24 +612,28 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 4px;
+  min-height: 36px;
 }
 
 .menu-card-price {
   font-family: 'Montserrat', sans-serif;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--text);
+  flex-shrink: 1;
+  min-width: 0;
+  white-space: nowrap;
 }
 
 .btn-add {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   border: 1.5px solid var(--accent);
   background: transparent;
   color: var(--accent);
-  font-size: 20px;
+  font-size: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -657,23 +651,25 @@ body {
 .qty-control {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
+  flex-shrink: 0;
 }
 
 .qty-btn {
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   border: 1.5px solid var(--accent);
   background: transparent;
   color: var(--accent);
-  font-size: 16px;
+  font-size: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s;
   font-family: inherit;
+  flex-shrink: 0;
 }
 
 .qty-btn:active {
@@ -683,9 +679,9 @@ body {
 
 .qty-value {
   font-family: 'Montserrat', sans-serif;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  min-width: 16px;
+  min-width: 14px;
   text-align: center;
   color: var(--text);
 }
