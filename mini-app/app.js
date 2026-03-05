@@ -27,6 +27,7 @@ const $waiter = document.getElementById("waiter-screen");
 const $reserve = document.getElementById("reserve-screen");
 const $cartBtn = document.getElementById("cart-btn");
 const $cartCount = document.getElementById("cart-count");
+const $backBtn = document.getElementById("back-btn");
 
 const ALL_SCREENS = [$home, $menu, $cart, $waiter, $reserve];
 
@@ -65,8 +66,8 @@ function initSketchBackground() {
   const container = document.getElementById("sketch-bg");
   if (!container) return;
 
-  const count = 40;
-  const cols = 6;
+  const count = 55;
+  const cols = 7;
   const rows = Math.ceil(count / cols);
 
   for (let i = 0; i < count; i++) {
@@ -89,11 +90,11 @@ function initSketchBackground() {
     el.style.left = x + "%";
     el.style.top = y + "%";
 
-    const rotFrom = -20 + Math.random() * 40;
-    const rotTo = rotFrom + (-6 + Math.random() * 12);
-    const dx = -6 + Math.random() * 12;
-    const dy = -8 + Math.random() * 16;
-    const opacity = 0.03 + Math.random() * 0.04;
+    const rotFrom = -25 + Math.random() * 50;
+    const rotTo = rotFrom + (-8 + Math.random() * 16);
+    const dx = -10 + Math.random() * 20;
+    const dy = -12 + Math.random() * 24;
+    const opacity = 0.06 + Math.random() * 0.05;
     const scale = 0.85 + Math.random() * 0.3;
 
     el.style.setProperty("--sk-rot-from", rotFrom + "deg");
@@ -103,8 +104,8 @@ function initSketchBackground() {
     el.style.setProperty("--sk-opacity", opacity);
     el.style.setProperty("--sk-scale", scale);
 
-    el.style.animationDuration = (12 + Math.random() * 18) + "s";
-    el.style.animationDelay = (-Math.random() * 15) + "s";
+    el.style.animationDuration = (16 + Math.random() * 22) + "s";
+    el.style.animationDelay = (-Math.random() * 20) + "s";
 
     container.appendChild(el);
   }
@@ -214,11 +215,13 @@ window.addEventListener("popstate", (e) => {
 function showBackButton() {
   const WebApp = window.WebApp;
   if (WebApp?.BackButton) WebApp.BackButton.show();
+  if ($backBtn) $backBtn.classList.remove("hidden");
 }
 
 function hideBackButton() {
   const WebApp = window.WebApp;
   if (WebApp?.BackButton) WebApp.BackButton.hide();
+  if ($backBtn) $backBtn.classList.add("hidden");
 }
 
 /* =============================================
@@ -636,6 +639,8 @@ async function init() {
       haptic("medium");
       navigateTo("cart");
     });
+
+    $backBtn.addEventListener("click", () => handleBack());
 
     document.getElementById("btn-back-to-menu")?.addEventListener("click", () => {
       haptic("light");
