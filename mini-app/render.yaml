@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: stefania-mini-app
+    runtime: node
+    buildCommand: echo "No build step needed"
+    startCommand: node server.js
+    envVars:
+      - key: PORT
+        value: 3000
