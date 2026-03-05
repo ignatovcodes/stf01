@@ -91,7 +91,7 @@ function initSketchBackground() {
     el.style.left = baseX + "%";
     el.style.top = baseY + "%";
 
-    const opacity = 0.06 + Math.random() * 0.04;
+    const opacity = 0.09 + Math.random() * 0.05;
     el.style.opacity = opacity;
 
     const scale = 0.9 + Math.random() * 0.15;
@@ -102,9 +102,9 @@ function initSketchBackground() {
       phase: Math.random() * Math.PI * 2,
       phaseY: Math.random() * Math.PI * 2,
       phaseRot: Math.random() * Math.PI * 2,
-      speedX: 0.00015 + Math.random() * 0.0002,
-      speedY: 0.00012 + Math.random() * 0.00018,
-      speedRot: 0.0001 + Math.random() * 0.00015,
+      speedX: 0.00022 + Math.random() * 0.00028,
+      speedY: 0.00018 + Math.random() * 0.00025,
+      speedRot: 0.00014 + Math.random() * 0.0002,
       ampX: 5 + Math.random() * 7,
       ampY: 4 + Math.random() * 6,
       ampRot: 6 + Math.random() * 10,
