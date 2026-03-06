@@ -123,17 +123,17 @@
         <p>Корзина пуста</p>
         <button class="btn-back-to-menu" id="btn-back-to-menu">Перейти в меню</button>
       </div>
-      <div id="cart-order-fields" class="cart-order-fields hidden">
-        <div class="cart-field-row">
-          <label class="cart-field-label" for="order-table">Номер стола</label>
-          <input type="number" id="order-table" class="cart-field-input" placeholder="Например: 5" inputmode="numeric" min="1" max="99">
-        </div>
-        <div class="cart-field-row">
-          <label class="cart-field-label" for="order-wishes">Пожелания</label>
-          <input type="text" id="order-wishes" class="cart-field-input" placeholder="Аллергии, без лука, и т.д.">
-        </div>
-      </div>
       <div id="cart-footer" class="cart-footer hidden">
+        <div class="cart-order-fields" id="cart-order-fields">
+          <div class="cart-field-row">
+            <label class="cart-field-label" for="order-table">Стол №</label>
+            <input type="number" id="order-table" class="cart-field-input" placeholder="5" inputmode="numeric" min="1" max="99">
+          </div>
+          <div class="cart-field-row cart-field-wishes">
+            <label class="cart-field-label" for="order-wishes">Пожелания</label>
+            <input type="text" id="order-wishes" class="cart-field-input" placeholder="Аллергии, без лука...">
+          </div>
+        </div>
         <div class="cart-total">
           <span>Итого</span>
           <span id="cart-total-price">0 ₽</span>
