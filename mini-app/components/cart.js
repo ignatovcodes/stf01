@@ -67,6 +67,7 @@ export function renderCart(cart, onQuantityChange) {
   const cartEmpty = document.getElementById("cart-empty");
   const cartFooter = document.getElementById("cart-footer");
   const cartTotalPrice = document.getElementById("cart-total-price");
+  const cartOrderFields = document.getElementById("cart-order-fields");
 
   if (!cartItems) return;
 
@@ -76,12 +77,14 @@ export function renderCart(cart, onQuantityChange) {
     cartItems.classList.add("hidden");
     cartEmpty.classList.remove("hidden");
     cartFooter.classList.add("hidden");
+    if (cartOrderFields) cartOrderFields.classList.add("hidden");
     return;
   }
 
   cartEmpty.classList.add("hidden");
   cartItems.classList.remove("hidden");
   cartFooter.classList.remove("hidden");
+  if (cartOrderFields) cartOrderFields.classList.remove("hidden");
 
   cartItems.innerHTML = "";
 

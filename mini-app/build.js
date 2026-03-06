@@ -9,6 +9,8 @@ const filesToCopy = [
   "styles.css",
   "app.js",
   "api.js",
+  "server.js",
+  "package.json",
 ];
 
 try { cpSync("logo.png", `${dist}/logo.png`); } catch (_) {}
@@ -19,5 +21,6 @@ filesToCopy.forEach((file) => {
 });
 
 cpSync("components", `${dist}/components`, { recursive: true });
+try { cpSync("lib", `${dist}/lib`, { recursive: true }); } catch (_) {}
 
 console.log("Build complete → dist/");
