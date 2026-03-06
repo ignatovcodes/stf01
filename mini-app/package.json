@@ -13,6 +13,7 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
+    "nodemailer": "^6.9.16",
     "sharp": "^0.33.5"
   }
 }

@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { handleWebhookUpdate } from "./lib/max-webhook.js";
+import { sendOrderEmail } from "./lib/send-order-email.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -11,6 +12,15 @@ const PORT = process.env.PORT || 3000;
 const MAX_BOT_TOKEN = process.env.MAX_BOT_TOKEN || "";
 const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET || "";
 const MINI_APP_URL = process.env.MINI_APP_URL || "";
+
+const SMTP_CONFIG = {
+  host: process.env.SMTP_HOST || "",
+  port: process.env.SMTP_PORT || "587",
+  secure: process.env.SMTP_SECURE || "false",
+  user: process.env.SMTP_USER || "",
+  pass: process.env.SMTP_PASS || "",
+  to: process.env.ORDER_EMAIL || "",
+};
 
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -54,6 +64,31 @@ const server = http.createServer((req, res) => {
         console.error("[Webhook]", e);
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ ok: true }));
+      }
+    });
+    return;
+  }
+
+  if (req.method === "POST" && (req.url === "/api/order" || req.url === "/api/order/")) {
+    let body = "";
+    req.setEncoding("utf8");
+    req.on("data", (chunk) => { body += chunk; });
+    req.on("end", async () => {
+      try {
+        const order = JSON.parse(body);
+        if (SMTP_CONFIG.host && SMTP_CONFIG.user && SMTP_CONFIG.to) {
+          await sendOrderEmail(order, SMTP_CONFIG);
+          console.log("[Order] Email отправлен на", SMTP_CONFIG.to);
+        } else {
+          console.warn("[Order] SMTP не настроен — email не отправлен");
+          console.log("[Order] Данные заказа:", JSON.stringify(order, null, 2));
+        }
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: true }));
+      } catch (e) {
+        console.error("[Order] Ошибка:", e);
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: false, error: e.message }));
       }
     });
     return;

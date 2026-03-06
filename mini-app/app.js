@@ -70,7 +70,7 @@ function initSketchBackground() {
   const rows = 10;
   const count = cols * rows;
   const items = [];
-  const size = 38;
+  const size = 44;
 
   for (let i = 0; i < count; i++) {
     const el = document.createElement("div");
@@ -91,10 +91,10 @@ function initSketchBackground() {
     el.style.left = baseX + "%";
     el.style.top = baseY + "%";
 
-    const opacity = 0.09 + Math.random() * 0.05;
+    const opacity = 0.14 + Math.random() * 0.06;
     el.style.opacity = opacity;
 
-    const scale = 0.9 + Math.random() * 0.15;
+    const scale = 0.95 + Math.random() * 0.15;
 
     items.push({
       el,
@@ -102,12 +102,12 @@ function initSketchBackground() {
       phase: Math.random() * Math.PI * 2,
       phaseY: Math.random() * Math.PI * 2,
       phaseRot: Math.random() * Math.PI * 2,
-      speedX: 0.00022 + Math.random() * 0.00028,
-      speedY: 0.00018 + Math.random() * 0.00025,
-      speedRot: 0.00014 + Math.random() * 0.0002,
-      ampX: 5 + Math.random() * 7,
-      ampY: 4 + Math.random() * 6,
-      ampRot: 6 + Math.random() * 10,
+      speedX: 0.0004 + Math.random() * 0.0004,
+      speedY: 0.00035 + Math.random() * 0.00035,
+      speedRot: 0.0003 + Math.random() * 0.0003,
+      ampX: 6 + Math.random() * 8,
+      ampY: 5 + Math.random() * 7,
+      ampRot: 8 + Math.random() * 14,
       rot0: -20 + Math.random() * 40,
     });
 
@@ -530,9 +530,23 @@ function handleOrder() {
     return;
   }
 
+  const tableInput = document.getElementById("order-table");
+  const wishesInput = document.getElementById("order-wishes");
+  const table = tableInput?.value.trim() || "";
+  const wishes = wishesInput?.value.trim() || "";
+
+  if (!table) {
+    showToast("Укажите номер стола");
+    haptic("warning");
+    tableInput?.focus();
+    return;
+  }
+
   const items = cart.getCartList();
   const data = {
     type: "order",
+    table: Number(table),
+    wishes,
     items: items.map((i) => ({
       name: i.name,
       qty: i.qty,
@@ -542,23 +556,31 @@ function handleOrder() {
     timestamp: new Date().toISOString(),
   };
 
-  const sent = sendToBot(data);
+  sendToBot(data);
+
+  fetch("/api/order", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  }).then((r) => {
+    if (r.ok) console.log("[Order] Email отправлен");
+    else console.warn("[Order] Email не отправлен:", r.status);
+  }).catch((e) => console.warn("[Order] Fetch error:", e));
+
   haptic("success");
 
   showSuccessOverlay(
     "✓",
     "Заказ оформлен",
-    `${items.length} позиций на ${cart.getTotal().toLocaleString("ru-RU")} ₽\nВаш заказ принят!`,
+    `Стол №${table}\n${items.length} позиций на ${cart.getTotal().toLocaleString("ru-RU")} ₽\nВаш заказ принят!`,
     () => {
       cart.clear();
+      if (tableInput) tableInput.value = "";
+      if (wishesInput) wishesInput.value = "";
       if (menuData) renderMenu(menuData.categories, cart, handleAddToCart);
       navigateTo("home");
     }
   );
-
-  if (!sent) {
-    console.log("[Order] Данные:", JSON.stringify(data, null, 2));
-  }
 }
 
 /* =============================================
